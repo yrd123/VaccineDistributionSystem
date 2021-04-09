@@ -1,0 +1,73 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block content %}
+<script src="{% static 'js/registerForVaccination.js' %}"></script>
+
+        <center><div id="signupwarning" class="warning alert alert-primary">
+            {% if error %}
+                {{error}}
+        {% endif %}
+        </div></center>
+
+        
+
+
+<form onsubmit="return validateRegistration()" action="/registerForVaccination/{{district_name}}/{{center_name}}" method="POST" style="margin:50px 100px;" name="registerForVaccinationForm" id="registerForVaccinationForm">
+   {% csrf_token %}
+   
+        <h3>{{ district_name }}</h3>
+        <h5>{{ center_name }}</h5>
+        
+        <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="name">Full Name </label>
+              <input type="text" class="form-control" id="name" name="name" placeholder="Enter Your Name" minlength="2" maxlength="255">
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="aadharNumber">Aadhar Number </label>
+              <input type="number" class="form-control" id="aadharNumber" name="aadharNumber" placeholder="Enter Aadhar Number" maxlength="16">
+            </div>
+        </div> 
+
+        <div class="form-row">
+            <div class="form-group col-md-12">
+              <label for="contactNumber">Contact Number </label>
+              <input type="number" class="form-control" id="contactNumber" name="contactNumber" placeholder="Enter Contact Number" maxlength="12">
+            </div>
+        </div>
+     
+        <div class="form-row">
+            <div class="form-group col-md-12">   
+              <label for="address"> Address </label>
+              <input type="text" class="form-control" id="address" name="address" placeholder="Enter your Address" maxlength="1000">
+            </div>
+        </div>        
+        <div class="form-row">
+            <div class="form-group col-md-12">
+                <label for="date-input">Date</label>
+                <input class="form-control" type="date" id="date-input" name="appointment_date" min="{{min_date_for_registration}}" max="{{max_date_for_registration}}" onchange="checkDate()" required>
+            </div>
+        </div>
+    <button type="submit" class="btn btn-dark">Submit</button>
+</form>
+<script>
+  var blocked_dates_var="{{blocked_dates|safe}}";
+  var blocked_dates = blocked_dates_var.substring(1,blocked_dates_var.length-1).split(", ");
+  
+  function checkDate(){
+    var dateEntered =  String("'"+document.registerForVaccinationForm.appointment_date.value+"'");
+    console.log(dateEntered);
+    for(var i=0; i< blocked_dates.length;i++){
+      console.log(blocked_dates[i])
+      if(blocked_dates[i].localeCompare(String(dateEntered)) == 0){
+        alert("We are sorry, we have reached maximum number of registrations for this day. Kindly choose some other day.");
+        document.registerForVaccinationForm.appointment_date.value = "";
+      }
+    }
+  }
+</script>
+{% endblock %}
+

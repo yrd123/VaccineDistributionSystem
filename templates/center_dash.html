@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% block content %}
+    
+
+        <br>
+        <a href="/center/{{name}}/receiverVaccination/" style="float: right;"><button type="button" class="btn btn-info">Recieved Vaccine</button></a>
+        {% if center_obj.maxCountPerDate == 10 %}
+        <br><br>
+          <form method = "POST" action="/center/{{name}}/updateMaxCountPerDate/" style="margin:50px;">
+            {% csrf_token %}
+            <div class="form-row">
+              <div class="form-group col-md-12">
+                <label for="max_count">Maximum Count per Day:</label>
+                <input type="number" class="form-control" id="max_count" name="max_count" placeholder="Enter Max Count" min="1">
+              </div>
+            </div>
+            <button class="btn btn-dark">Submit</button>
+          </form>
+        {% else %}
+          <b style="color: green;">Max Count per Day : {{center_obj.maxCountPerDate}}</b>
+        {% endif %}
+        <br><br>
+        
+        <table class="table table-striped table-bordered">
+            <thead>
+              <tr class="thead-dark">
+                <th scope="col">Lot ID</th>
+                <th scope="col">Arrival Time</th>
+                <th scope="col">Doses consumed</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for lot in vaccine_lots %}
+              <tr>
+                <th scope="row">{{ lot.lot.lotId }}</th>
+                
+
+                <td>
+                  {% if lot.arrivalTimestamp == None %}
+                    <b style="color:red;">Haven't arrived</b>
+                  {% else %}
+                    <b style="color:green;">{{lot.arrivalTimestamp}}</b>
+                  {% endif %}
+                </td>
+                <td>{{lot.lot.countOfDosesConsumed}}</td>
+                <td>
+                  {% if lot.arrivalTimestamp == None %}
+                    <a href="/center/{{name}}/updateArrivalTimeCenter/{{ lot.lot.lotId }}"><button type="button" class="btn btn-dark">Update Arrival</button></a>
+                  {% else %}
+                    <b style="color:green;">Arrived</b>
+                  {% endif %}
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+
+{% endblock content %}

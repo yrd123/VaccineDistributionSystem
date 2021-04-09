@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block content %}
+<style>
+  a{
+    color: black;
+  }
+</style>
+<br><br>
+<table class="table  table-bordered table-striped" style="text-transform: capitalize;">
+  <thead>
+    <tr class="thead-dark">
+      <th scope="col">District Name</th>
+    </tr>
+  </thead>
+  <tbody>
+  {% if districts %}
+      {% for district in districts %}
+          <tr>
+            {% url 'district_dash' district as district_url%}
+            <td><a href="{{district_url}}">{{district}}</a></td>
+          </tr>
+      {% endfor %}
+  {% endif %}
+  </tbody>
+</table>
+<br>
+
+<table class="table table-bordered table-striped table-bordered"  style="text-transform: capitalize;">
+    <thead class="thead-dark">
+      <tr>
+        <th scope="col">Center Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% if centers %}
+          {% for center in centers %}
+              <tr>
+                {% url 'center_dash' center as center_url%}
+                <td><a href="{{center_url}}">{{center}}</a></td>
+              </tr>
+          {% endfor %}
+      {% endif %}
+    </tbody>
+  </table>
+
+{% endblock content %}

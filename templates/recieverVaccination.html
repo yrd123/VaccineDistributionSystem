@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block content %}
+<body>
+    <form method="POST" action="/center/{{name}}/receiverVaccination/" style="margin:100px">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="exampleInputEmail1">Aadhar Number</label>
+            <input type="number" name="aadharNumber" id="aadharNumber" class="form-control" minlength="16"
+                maxlength="16" />
+        </div>
+        <button type="submit" class="btn btn-dark">Submit</button>
+    </form>
+</body>
+
+</html>
+{% endblock content %}

@@ -1,0 +1,12 @@
+{% extends 'admin/base.html' %}
+
+
+{% block branding %}
+<h1>Vaccine Distribution System</h1>
+{% endblock %}
+
+
+{% block nav-global %}
+<a href="{% url 'send_to_district' %}">Send to district</a>
+{% endblock %}
+

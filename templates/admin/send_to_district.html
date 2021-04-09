@@ -1,0 +1,54 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name"><a href="{% url 'admin:index' %}"></a>{{ site_header|default:_('Vaccine Distribution System') }}</a></h1>
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
+
+
+{% block content %}
+
+    <b style="color: green;">Available lots at DMega-Center:  {{quantity_available}}</b>
+    <br><br>
+    <button onclick="set_value()">Set Values According to Recommendation</button>
+
+    <br><br>
+    <form action="/send_to_district" method="POST">
+        <table class="table table-striped table-bordered">
+            <thead>
+            <tr class="table-info">
+                <th scope="col">District</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Recommended Distribution Based on Population</th>
+                <th scope="col">Already at that district</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% csrf_token %}
+                {% for district,ratio in districts %}
+                    <tr>
+                        <input type="hidden" name="districts" value="{{ district.name }}" readonly />
+                        <th scope="row">{{ district.name }}</th>
+                        <td><input class="set_ratio" type="number" value="0" name="quantities" /></a>
+                        <td class="get_ratio">{{ ratio.0 }}</td>
+                        <td>{{ ratio.1 }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <button class="btn btn-primary" type="submit">Submit</button>
+    </form>
+    <script>
+        function set_value() {
+            for(i=0; i< document.getElementsByClassName("get_ratio").length; i++){
+                let x= parseInt(document.getElementsByClassName("get_ratio")[i].innerHTML);
+                document.getElementsByClassName("set_ratio")[i].value = x;
+            }
+            }
+    </script>
+    {{error}}
+
+{% endblock %}

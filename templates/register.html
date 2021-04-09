@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+  
+Register Account
+{% block content %}
+<form class="account-form" action="/register" method="POST" style="margin:70px 200px;">
+    {% csrf_token %}
+    <h3 class="mb-2">Create an account</h3>
+    {% if form.errors %}
+        <p>Please correct the following errors:</p>
+        {% for field in form %}
+            {% if field.errors %}
+                <div class="alert alert-primary" role="alert">
+                    {{ field.label }}: {{ field.errors|striptags }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ form.first_name.label }}</label>
+      <input type="text" name="first_name" class="form-control" maxlength="50" minlength="4" required id="id_first_name">
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ form.last_name.label }}</label>
+      <input type="text" name="last_name" class="form-control" maxlength="50" minlength="4" required id="id_last_name">
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ form.email.label}}</label>
+      <input type="email" name="email" class="form-control"  maxlength="100" required id="id_email">
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ form.password.label}}</label>
+      <input type="password" name="password" class="form-control" required id="id_password">
+      <small id="emailHelp" class="form-text text-muted">At least 8 characters and 1 digit</small>
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ form.password2.label}}</label>
+      <input type="password" name="password2" class="form-control" required id="id_password2">
+      <small id="emailHelp" class="form-text text-muted">Must be same as entered above</small>
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">Enter Aadhar Number</label>
+      <input type="text" name="aadharNumber" class="form-control" maxlength="16" minlength="16" required id="id_aadharNumber">
+      <small id="emailHelp" class="form-text text-muted">Aadhar number must be of 16 digits.</small>
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ form.center_name.label }}</label>
+      <input type="text" name="center_name" class="form-control" maxlength="30" minlength="0" required id="id_center_name">
+    </div>
+    
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ form.district_name.label }}</label>
+      <input type="text" name="district_name" class="form-control" maxlength="30" minlength="0" required id="id_district_name">
+    </div>
+
+    <div class="form-group">
+      <label for="exampleInputEmail1">{{ form.key.label }}</label>
+      <input type="text" name="key" class="form-control" maxlength="50" minlength="16" required id="id_key">
+      <small id="emailHelp" class="form-text text-muted">Enter the key provided by mega center.</small>
+    </div>
+
+    <button type="submit" class="btn btn-dark">Submit</button>
+
+</form>
+{% endblock content %}

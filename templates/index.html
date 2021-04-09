@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+<style>
+.screen-1{
+	padding: 50px  20px;
+	background-color: #fff;
+}
+
+.main-screen{
+    padding: 0 100px;
+	margin-bottom: 50px;
+}
+
+.main-text{
+	font-size: 2.8rem;
+	font-weight: 700;
+	line-height: normal;
+	margin-bottom: 20px;
+}
+
+
+.sub-text{
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: normal;
+	margin-bottom: 20px;
+	text-align: justify;
+}
+.main-text{
+	font-size: 2.8rem;
+	font-weight: 700;
+	line-height: normal;
+	margin-bottom: 20px;
+}
+
+
+.sub-text{
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: normal;
+	margin-bottom: 20px;
+	text-align: justify;
+}
+
+.hire-mech{
+	width: 200px;
+	border: none;
+	padding: 12px 8px;
+	margin: 20px 0;
+	border-radius:8px;
+	background-color:  #e75d57;
+	color: #fff;
+	font-size: 1.2rem;
+}
+
+
+.main-text{
+	font-size: 1.9rem;
+	font-weight: 700;
+	line-height: normal;
+	margin: 20px 0px;
+}
+
+.screen-1{
+	padding: 40px  20px;
+	background-color: #fff;
+}
+
+
+.sub-text{
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: normal;
+	margin-bottom: 20px;
+	text-align: justify;
+}
+
+.hire-mech{
+	width: 250px;
+	border: none;
+	padding: 10px 5px;
+	margin: 20px 0;
+	border-radius:8px;
+	color: #fff;
+	font-size: 1.2rem;
+}
+
+.hire-mech:hover{
+    cursor: pointer;
+}
+
+.faq-search-wrap {
+    padding: 50px 0 60px;
+}
+
+.faq-search-wrap .form-group .form-control,
+.faq-search-wrap .form-group .dd-handle {
+    border-top-right-radius: .25rem;
+    border-bottom-right-radius: .25rem;
+}
+
+.faq-search-wrap .form-group .input-group-append {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.faq-search-wrap .form-group .input-group-append .input-group-text {
+    background: transparent;
+    border: none;
+}
+
+.faq-search-wrap .form-group .input-group-append .input-group-text .feather-icon > svg {
+    height: 18px;
+    width: 18px;
+}
+.bg-teal-light-3 {
+    background-color: #7fcdc1 !important;
+}
+
+.hk-row {
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    margin-right: -10px;
+    margin-left: -10px;
+}
+
+@media (min-width: 576px){
+    .mt-sm-60 {
+        margin-top: 60px !important;
+    }
+}
+.mt-30 {
+    margin-top: 30px !important;
+}
+
+.list-group-item.active {
+    background-color: #00acf0;
+    border-color: #00acf0;
+}
+.accordion .card .card-header.activestate {
+    border-width: 1px;
+}
+.accordion .card .card-header {
+    padding: 0;
+    border-width: 0;
+}
+.card.card-lg .card-header, .card.card-lg .card-footer {
+    padding: .9rem 1.5rem;
+}
+.accordion>.card .card-header {
+    margin-bottom: -1px;
+}
+.card .card-header {
+    background: transparent;
+    border: none;
+}
+.accordion.accordion-type-2 .card .card-header > a.collapsed {
+    color: #324148;
+}
+.accordion .card:first-of-type .card-header:first-child > a {
+    border-top-left-radius: calc(.25rem - 1px);
+    border-top-right-radius: calc(.25rem - 1px);
+}
+.accordion.accordion-type-2 .card .card-header > a {
+    background: transparent;
+    color: #00acf0;
+    padding-left: 50px;
+}
+.accordion .card .card-header > a.collapsed {
+    color: #324148;
+    background: transparent;
+}
+.accordion .card .card-header > a {
+    background: #00acf0;
+    color: #fff;
+    font-weight: 500;
+    padding: .75rem 1.25rem;
+    display: block;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    -webkit-transition: all 0.2s ease-in-out;
+    -moz-transition: all 0.2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+}
+a {
+    text-decoration: none;
+    color: #00acf0;
+    -webkit-transition: color 0.2s ease;
+    -moz-transition: color 0.2s ease;
+    transition: color 0.2s ease;
+}
+
+
+.badge.badge-pill {
+    border-radius: 50px;
+}
+.badge.badge-light {
+    background: #eaecec;
+    color: #324148;
+}
+.badge {
+    font-weight: 500;
+    border-radius: 4px;
+    padding: 5px 7px;
+    font-size: 72%;
+    letter-spacing: 0.3px;
+    vertical-align: middle;
+    display: inline-block;
+    text-align: center;
+    text-transform: capitalize;
+}
+.ml-15 {
+    margin-left: 15px !important;
+}
+
+.accordion.accordion-type-2 .card .card-header > a.collapsed:after {
+    content: "\f158";
+}
+
+.accordion.accordion-type-2 .card .card-header > a::after {
+    display: inline-block;
+    font: normal normal normal 14px/1 'Ionicons';
+    text-transform: none;
+    line-height: 1;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: auto;
+    position: absolute;
+    content: "\f176";
+    font-size: 21px;
+    top: 15px;
+    left: 20px;
+}
+
+.mr-15 {
+    margin-right: 15px !important;
+}
+</style>
+
+<div class="container-fluid screen-1">
+	<center><div style="font-size: 30px;font-family:'Courier New', Courier, monospace;">Total Doses Administered : {{total_doses_consumed}}</div></center>
+    <div class="row m-0">
+      <div class="col-lg-6 col-md-6 p-0 align-self-center" data-aos="fade-right">
+        <div class="row m-0 justify-content-center">
+          <div class="main-screen">
+			<div class="main-text">Vaccination</div>
+        <div class="sub-text">
+            We believe that vaccines are the best solution against 
+            any virus or bacteria. To provide those vaccines to everyone in the world 
+            we strive to innovate and come up with better solutions to the current problem 
+            of pandemic. Vaccines train your immune system to create antibodies, 
+            just as it does when it’s exposed to a disease. However, because vaccines contain 
+            only killed or weakened forms of germs like viruses or bacteria, they do not cause 
+            the disease or put you at risk of its complications.</div><div class="sub-text">
+            Immunization is a key component of primary health care and an indisputable human right. 
+            It’s also one of the best health investments money can buy. Vaccines are also critical to the 
+            prevention and control of infectious-disease outbreaks. 
+            They underpin global health security and will be a vital tool in the battle against 
+            antimicrobial resistance.         
+        </div><div class="link-button">
+            <a href="{% url 'registerForVaccinationDistrictForm' %}"><button type="button" class="btn btn-outline-dark">Register For Vaccination</button></a>
+          </div>
+         </div>
+        </div>
+      </div>
+       <div class="col-lg-6 col-md-6 p-0 image-screen" data-aos="fade-left">
+         <img src="{% static 'vaccine-illustration.jpg' %}" class="img-responsive fit-image" >
+       </div>
+    </div>
+</div>
+  
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/4.2.0/css/ionicons.min.css" integrity="sha256-F3Xeb7IIFr1QsWD113kV2JXaEbjhsfpgrKkwZFGIA4E=" crossorigin="anonymous" />
+
+<div class="container-fluid">
+    <!-- Row -->
+    <div class="row">
+        <div class="col-xl-12 pa-0">
+           
+            <div class="container mt-sm-60 mt-30">
+                <div class="hk-row">
+
+                    <div class="col-xl-12">
+                        <div class="card card-lg">
+                            <center><h3 class="card-header border-bottom-0">
+                                            Frequently Asked Questions
+                                        </h3></center>
+                            <div class="accordion accordion-type-2 accordion-flush" id="accordion_2">
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between activestate">
+                                        <a role="button" data-toggle="collapse" href="#collapse_1i" aria-expanded="true">How do I get a Vaccine</a>
+                                    </div>
+                                    <div id="collapse_1i" class="collapse show" data-parent="#accordion_2" role="tabpanel">
+                                        <div class="card-body pa-15">Register for Vaccination by going to revustration page given above and select your District and nearby Center</div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2i" aria-expanded="false">When will the vaccine be available to me?</a>
+                                    </div>
+                                    <div id="collapse_2i" class="collapse" data-parent="#accordion_2">
+                                        <div class="card-body pa-15">Because the supply of COVID-19 vaccine in India is currently limited, ICMR is providing recommendations to state and local governments about<br> who should be vaccinated first. ICMR’s recommendations are based on those of the Advisory Committee on Immunization Practices (ACIP), an independent panel of medical and public health experts.
+
+                                            Each state has its own plan for deciding which groups of people will be vaccinated first.<br> You can contact your state health department for more information on its plan for COVID-19 vaccination.
+                                            
+                                            The goal is for everyone to be able easily<br> to get a COVID-19 vaccination as soon as large quantities of vaccine are available. As the vaccine supply increases, more groups will be added to receive vaccination. </div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_3i" aria-expanded="false">Can I choose which COVID-19 vaccine I get?</a>
+                                    </div>
+                                    <div id="collapse_3i" class="collapse" data-parent="#accordion_2">
+                                        <div class="card-body pa-15">You should get any COVID-19 vaccine that is available when you are eligible. Do not wait for a specific brand. All currently authorized and recommended COVID-19 vaccines are safe and effective, and ICMR does not recommend one vaccine over another.</div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_4i" aria-expanded="false">What are the most common side effects after gettina a COVID-19 vaccine?</a>
+                                    </div>
+                                    <div id="collapse_4i" class="collapse" data-parent="#accordion_2">
+                                        <div class="card-body pa-15">After getting vaccinated, you might have some side effects, which are normal signs that your body is building protection. Common side effects are pain, redness, and swelling in the arm where you received the shot, as well as tiredness, headache, muscle pain, chills, fever, and nausea throughout the rest of the body. These side effects could affect your ability to do daily activities, but they should go away in a few days.</div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_5i" aria-expanded="false">If I have an underlying condition, can I get a COVID-19 vaccine?</a>
+                                    </div>
+                                    <div id="collapse_5i" class="collapse" data-parent="#accordion_2">
+                                        <div class="card-body pa-15">People with underlying medical conditions can receive a COVID-19 vaccine as long as they have not had an immediate or severe allergic reaction to<br> a COVID-19 vaccine or to any of the ingredients in the vaccine.Vaccination is an important consideration for adults of any age with certain underlying medical conditions because they are at increased risk for severe illness from COVID-19.</div>
+                                    </div>
+                                </div>
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_6i" aria-expanded="false">Can I get vaccinated against COVID-19 while I am currently sick with COVID-19?</a>
+                                    </div>
+                                    <div id="collapse_6i" class="collapse" data-parent="#accordion_2">
+                                        <div class="card-body pa-15">No. People with COVID-19 who have symptoms should wait to be vaccinated until they have recovered from their illness and have met the criteria for discontinuing isolation; those without symptoms should also wait until they meet the criteria before getting vaccinated. This guidance also applies to people who get COVID-19 before getting their second dose of vaccine.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Row -->
+</div>
+<br>
+<br>
+{% endblock content %}

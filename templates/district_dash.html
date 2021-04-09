@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+
+    {% block content %}
+
+    {% if error %}
+    <p>Please correct the following errors:</p>
+      {% for field in error %}
+        {% if field %}
+        <div class="alert alert-primary" role="alert">
+          {{ field }}
+        </div>
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+        <a href="/district/{{name}}/send_to_center" style="float: right; margin:10px;"><button Type="button" class="btn btn-primary">Send Vaccine to Center</button></a>
+        <form method="POST">
+            {% csrf_token %}
+            <table>
+                <thead class=" table table-info table-dark">
+                    <th>Name</th>
+                    <th>Population</th>
+                </thead>
+                <tr>
+                    <td><input type="text" id="name" name="name" required /></td>
+                    <td><input type="number" id="population" name="population" required min=1 /></td>
+                    <br>
+                </tr>
+                <tr>
+                  <td><button class="btn btn-dark" type="submit" id="add" value="Add center">Add Center</button></td>
+                </tr>
+            </table>
+           
+        </form>
+
+        <br><br>
+
+        <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Center ID</th>
+                <th scope="col">Center Name</th>
+                <th scope="col">UUID</th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for center in centers %}
+              <tr>
+                <th scope="row">{{center.centerPrimaryKey}}</th>
+                <td style="text-transform: capitalize;">{{center.name}}</td>
+                <td>{{center.centerId.urn|slice:"9:"}}</td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+          <br><br>
+
+          <table class="table table-striped table-bordered">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col">Lot ID</th>
+                <th scope="col">Arrival Time</th>
+                <th scope="col">Departure Time</th>
+                <th scope="col"></th>
+              </tr>
+            </thead>
+            <tbody>
+            {% for lot in vaccine_lots %}
+              <tr>
+                <th scope="row">{{ lot.lot.lotId }}</th>
+                <td>
+                  {% if lot.arrivalTimestamp == None %}
+                    <b style="color:red;">Haven't arrived</b>
+                  {% else %}
+                    <b style="color:green;">{{lot.arrivalTimestamp}}</b>  
+                  {% endif %}
+                </td>
+
+                <td>
+                  {% if lot.departureTimestamp == None %}
+                    <b style="color:red;">Haven't Departed</b>
+                  {% else %}
+                    <b style="color:green;">{{lot.departureTimestamp}}</b>
+                  {% endif %}
+                </td>
+                
+                {% if lot.arrivalTimestamp == None %}
+                  <td><a href="/district/{{name}}/updateArrivalTimeDistrict/{{ lot.lot.lotId }}"><button type="button" class="btn btn-dark">Update Arrival</button></a>
+                {% else %}
+                  <td>
+                    <b style="color:green;">Arrived
+                    {% if lot.departureTimestamp != None %}
+                    and Departed
+                    {% endif %}
+                    </b>
+                  </td>
+
+                {% endif %}
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+
+    {% endblock content %}

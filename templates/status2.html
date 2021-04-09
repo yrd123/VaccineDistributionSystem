@@ -1,0 +1,211 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load static %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+    .grid-container {
+        display: grid;
+    }
+      
+    .grid-container--fill {
+        grid-template-columns: repeat(auto-fill, minmax(35px, 1fr));
+    }
+    
+    .grid-element {
+            background-color: black;
+            padding: 5px;
+            color: white;
+            border: 1px solid #fff;
+            border-radius: 10px;
+            text-align: center;
+    }
+            
+            
+</style>
+
+        <div class="accordion" id="accordionExample" >
+            <div class="card" style="text-transform: capitalize;">
+                <div class="card-header" id="headingTwo">
+                  <h5 class="mb-0" >
+                    Mega Center
+                    <button type="button" class="btn btn-dark" style="float: right;" data-toggle="modal" data-target="#MegaCenterModal">View</button>
+                  </h5>
+                </div>
+
+                <div id="MegaCenterModal" class="modal fade modalText" role="dialog" style="text-transform: capitalize;">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h4 class="modal-title">Mega Center</h4>
+                        </div>
+                        <div class="modal-body">
+                          Produced : <span id="megaCenterLotsCount"></span>
+                          <div class="grid-container grid-container--fill">
+                            {% for lot in lots %}
+                                    {% if lot.status == 'produced' %}
+                                        <div class="grid-element" name="megaCenter">
+                                          {{lot.lotId}}
+                                        </div>
+                                    {% endif %}
+                            {% endfor %}
+                          </div>
+                          <br>
+                        </div>
+                        <div class="modal-footer">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+            {% for district in districts %}
+            <div class="card" >
+              <div class="card-header" id="headingTwo">
+                <h5 class="mb-0" >
+                  {{ district.name }}
+                  <button type="button" class="btn btn-dark" style="float: right;" data-toggle="modal" data-target="#{{ district.name }}DistrictModal">View</button>
+                  <button class="btn btn-link collapsed" type="button" data-toggle="collapse" data-target="#{{district.name}}DistrictCollapse" aria-expanded="false" aria-controls="{{district.name}}DistrictCollapse">
+                    <i class="fa fa-plus-square" aria-hidden="true" ></i>
+                  </button>
+                </h5>
+              </div>
+              <!--modal-->
+              <div id="{{district.name}}DistrictModal" class="modal fade modalText districtModal" role="dialog" style="text-transform: capitalize;">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h4 class="modal-title">{{district.name}}</h4>
+                    </div>
+                    <div class="modal-body">
+                      
+                      To  be arrived :  <span class="lotsCountSentToDistrict"></span>
+                      <div class="grid-container grid-container--fill">
+                        {% for lot in lots %}
+                            {% if lot.districtVaccine.district.name == district.name %}
+                                {% if lot.status == 'transitToDistrict' %}
+                                
+                                    <div class="grid-element sentToDistrict">
+                                    {{lot.lotId}}
+                                    </div>
+                                
+                                {% endif %}
+                            {% endif %}
+                        {% endfor %}
+                      </div>
+                      <br>
+                      Arrived : <span class="lotsCountAtDistrict"></span>
+                      <div class="grid-container grid-container--fill ">
+                      {% for lot in lots %}
+                        {% if lot.districtVaccine.district.name == district.name %}
+                            {% if lot.status == 'atDistrict' %}
+                              <div class="grid-element arrivedAtDistrict">
+                                {{lot.lotId}}
+                              </div>
+                            {% endif %}
+                        {% endif %}
+                      {% endfor %}
+                      </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="{{district.name}}DistrictCollapse" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+
+                <div class="card-body" style="text-transform: capitalize;">
+
+
+                  <table class="table ">
+                    <thead class="thead-dark">
+                      <tr>
+                        <th scope="col">Center Id</th>
+                        <th scope="col">Center Name</th>
+                        <th scope="col"></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      
+                      {% for center in centers %}
+                      {% if center.district_id == district.districtPrimaryKey %}
+                        <tr>
+                          <th scope="row">{{center.centerPrimaryKey}}</th>
+                          <td>{{center.name}}</td>
+                          <td><button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#{{ center.name }}CenterModal">View</button></td>
+                        </tr>
+                        <div id="{{center.name}}CenterModal" class="modal fade centerModal" role="dialog">
+                          <div class="modal-dialog">
+                            <div class="modal-content">
+                              <div class="modal-header">
+                                <h4 class="modal-title">{{center.name}}</h4>
+                              </div>
+                              <div class="modal-body">
+                                
+                                To  be arrived : <span class="lotsCountSentToCenter"></span> 
+                                <div class="grid-container grid-container--fill">
+                                {% for lot in lots %}
+                                    {% if lot.centerVaccine.center.name == center.name %}
+                                        {% if lot.status == 'transitToCenter' %}
+                                            <div class="grid-element sentToCenter">
+                                              {{lot.lotId}}
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                                <br>
+                                Arrived : <span class="lotsCountAtCenter"></span>
+                                <div class="grid-container grid-container--fill"> 
+                                {% for lot in lots %}
+                                    {% if lot.centerVaccine.center.name == center.name %}
+                                        {% if lot.status == 'atCenter' %}
+                                            <div class="grid-element arrivedAtCenter">
+                                              {{lot.lotId}}
+                                            </div>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                                </div>
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                      {% endif %}
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                  
+                </div>
+              </div>
+            </div>
+            {% endfor %}
+            
+          </div>
+
+          <script>
+            var megaCenterCount = document.getElementsByName("megaCenter");
+            var districtModals = document.getElementsByClassName("districtModal");
+            var centerModals = document.getElementsByClassName("centerModal");
+            var district, center;
+            for(var i=0;i<districtModals.length;i++){
+                district = districtModals[i];
+                district.getElementsByClassName("lotsCountSentToDistrict")[0].innerHTML =district.getElementsByClassName("sentToDistrict").length;
+                district.getElementsByClassName("lotsCountAtDistrict")[0].innerHTML =district.getElementsByClassName("arrivedAtDistrict").length;
+            }
+            for(var i=0;i<centerModals.length;i++){
+                center = centerModals[i];
+                center.getElementsByClassName("lotsCountSentToCenter")[0].innerHTML =center.getElementsByClassName("sentToCenter").length;
+                center.getElementsByClassName("lotsCountAtCenter")[0].innerHTML =center.getElementsByClassName("arrivedAtCenter").length;
+            }
+
+           document.getElementById("megaCenterLotsCount").innerHTML = megaCenterCount.length;
+      
+          </script>
+
+{% endblock content %}

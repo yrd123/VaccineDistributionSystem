@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if error %}
+<p>Please correct the following errors:</p>
+    {% for field in error %}
+        {% if field %}
+        <div class="alert alert-primary" role="alert">
+          {{ field }}
+        </div>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+<form action="/login" id="login" name="loginform" method="POST" style="margin:100px 400px;">
+    {% csrf_token %}
+    <center><h4>Login Account</h4></center>
+    <div class="form-group">
+        <label for="exampleInputEmail1">Enter Email ID</label>
+        <input type="email" name="email" class="form-control"  maxlength="100" required id="id_email">
+    </div>
+    <div class="form-group">
+        <label for="exampleInputEmail1">Enter Password</label>
+        <input type="password" name="password" class="form-control" required id="id_password">
+        <small id="emailHelp" class="form-text text-muted">At least 8 characters and 1 digit</small>
+    </div>
+    <input type="submit" value="Login" class="button btn btn-dark" />
+</form>
+{% endblock content %}
+
