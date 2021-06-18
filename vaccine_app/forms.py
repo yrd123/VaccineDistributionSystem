@@ -93,3 +93,52 @@ class ProvideAccessForm(forms.ModelForm):
                 raise forms.ValidationError("Access already exist")
         return self.cleaned_data['district_name']
 
+
+
+# class GiveAccessMegaCenter(forms.ModelForm):
+#     email = forms.EmailField(max_length=100, help_text='Required', error_messages={
+#         'required': 'Sorry, you will need an email'})
+#     center_name = forms.CharField(label='Enter center_name', min_length=0, max_length=30, empty_value="")
+#     district_name = forms.CharField(label='Enter district_name', min_length=0, max_length=30, empty_value="")
+
+#     class Meta:
+#         model = Keys
+#         fields = ()
+    
+#     # def clean_center_name(self):
+#     #     center_name = self.cleaned_data['center_name'].lower()
+#     #     print(center_name)
+#     #     if center_name=="_":
+#     #         return "_"
+#     #     else:
+#     #         center_obj = Center.objects.filter(name=center_name)
+#     #         if center_obj.count()==0:
+#     #             raise forms.ValidationError("No Center exists")
+#     #         # center_access = AccessControlListCenter.objects.filter(person=self.user,center=center_obj[0])
+#     #         # if center_access.exists():
+#     #         #     raise forms.ValidationError("Access already exists")
+#     #     print(center_name)
+#     #     return self.cleaned_data['center_name']
+
+#     # def clean_district_name(self):
+
+#     #     district_name = self.cleaned_data['district_name'].lower()
+        
+#     #     if district_name=="_":
+#     #         return "_"
+#     #     else:
+#     #         district_obj = District.objects.filter(name=district_name)
+#     #         if not district_obj.exists():
+#     #             raise forms.ValidationError("No District exists")
+#     #         # district_access = AccessControlListDistrict.objects.filter(person=self.user,district=district_obj[0])
+#     #         # if not district_access.count()==0:
+#     #         #     raise forms.ValidationError("Access already exist")
+#     #     print(district_name)
+#     #     return self.cleaned_data['district_name']
+
+#     # def clean_email(self):
+#     #     email = self.cleaned_data['email']
+#     #     print(email)
+#     #     return email
+
+

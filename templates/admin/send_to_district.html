@@ -3,10 +3,12 @@
 {% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}"></a>{{ site_header|default:_('Vaccine Distribution System') }}</a></h1>
+<h1 id="site-name"><a href="{% url 'admin:index' %}">{{ site_header|default:_('Vaccine Distribution System') }}</a></h1>
 {% endblock %}
 
-{% block nav-global %}{% endblock %}
+{% block nav-global %}
+<a href="{% url 'give_access_megaCenter' %}">Give Access</a>
+{% endblock %}
 
 
 {% block content %}

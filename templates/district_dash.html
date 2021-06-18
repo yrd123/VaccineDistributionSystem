@@ -41,7 +41,6 @@
               <tr>
                 <th scope="col">Center ID</th>
                 <th scope="col">Center Name</th>
-                <th scope="col">UUID</th>
               </tr>
             </thead>
             <tbody>
@@ -49,7 +48,6 @@
               <tr>
                 <th scope="row">{{center.centerPrimaryKey}}</th>
                 <td style="text-transform: capitalize;">{{center.name}}</td>
-                <td>{{center.centerId.urn|slice:"9:"}}</td>
               </tr>
             {% endfor %}
             </tbody>

@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 # from django.contrib.auth.models import  User,auth
-from .models import VaccineLot, District, DistrictVaccineData, Center, CenterVaccineData, CenterRegestration, Receiver, ReceiverVaccination, AccessControlListCenter,AccessControlListDistrict
+from .models import VaccineLot, District, DistrictVaccineData, Center, CenterVaccineData, CenterRegestration, Receiver, ReceiverVaccination, AccessControlListCenter,AccessControlListDistrict, Keys
 from datetime import datetime
 from .models import User
 from .forms import RegistrationForm, ProvideAccessForm
@@ -12,12 +12,90 @@ import uuid
 import datetime
 import sys
 from math import floor,ceil
+# import logging
+from smtplib import SMTPException
+from django.conf import settings 
+from django.core.mail import send_mail 
+
+@login_required(login_url="admin:login")
+def give_access_megaCenter(request):
+    error=[]
+    if request.method == "POST":
+
+        email=request.POST.get('email')
+        center_name=request.POST.get('center_name')
+        district_name=request.POST.get('district_name')
+
+        if district_name != "_":
+            if District.objects.filter(name=district_name).exists():
+                if not Keys.objects.filter(person=email, district_name=district_name).exists():
+                    district_obj=District.objects.get(name=district_name)
+                    key=district_obj.districtId
+
+                    district_obj.districtId=uuid.uuid4()
+                    district_obj.save()
+
+
+                    Keys.objects.create(person=email,district_name=district_name,key=key)
+
+                    recipient_list = [email, ] 
+                    subject = 'Access to '+str(email)+' for '+str(district_name)
+                    message = str(district_name) + ' key = '+ str(key.urn[9:])
+                    email_from = settings.EMAIL_HOST_USER 
+                    
+                    try:
+                        send_mail( subject, message, email_from, recipient_list )
+                    except SMTPException as e:
+                        print('There was an error sending an email: ', e) 
+                    return redirect('/admin')
+                else:
+                    error.append("Already given access")
+            else:
+                error.append("No district exists")
+
+
+        if center_name != "_":
+            if Center.objects.filter(name=center_name).exists():
+                if not Keys.objects.filter(person=email,center_name=center_name).exists():
+
+                    center_obj=Center.objects.get(name=center_name)
+                    key=center_obj.centerId
+
+                    center_obj.centerId=uuid.uuid4()
+                    center_obj.save()
+
+                    Keys.objects.create(person=email,center_name=center_name,key=key)
+
+                    recipient_list = [email, ] 
+                    subject = 'Access to '+str(email)+' for '+str(center_name)
+                    message = str(center_name) + ' key = '+ str(key.urn[9:])
+                    email_from = settings.EMAIL_HOST_USER 
+                    
+                    try:
+                        send_mail( subject, message, email_from, recipient_list )
+                    except SMTPException as e:
+                        print('There was an error sending an email: ', e)
+                    return redirect('/admin') 
+                else:
+                    error.append("Already given access")
+
+            else:
+                error.append("Invalid center name")
+    return render(request, "admin/giveaccessmegacenter.html", {"error": error})
+
+# logging.basicConfig(filename="std.log", 
+# 					format='%(asctime)s %(message)s', 
+# 					filemode='w') 
+# logger=logging.getLogger() 
+# logger.setLevel(logging.DEBUG) 
 # Create your views here.
 def index(request):
     # objs = [VaccineLot() for i in range(40)]
     # VaccineLot.objects.bulk_create(objs,batch_size=40)
     lots = VaccineLot.objects.all()
     total_consumed = 0
+    # str1=str(total_consumed)+"Registered"
+    # logger.info(str1)
     for lot in lots:
         total_consumed += lot.countOfDosesConsumed
     return render(request,"index.html", {"total_doses_consumed":total_consumed})
@@ -29,55 +107,57 @@ def register_user(request):
 
     if request.method == "POST":
         registerForm = RegistrationForm(request.POST)
-        print("INside post")
         if registerForm.is_valid():
-            print("Inside form")
+            email=registerForm.cleaned_data["email"]
             # user = registerForm.save(commit=False)
             center_name=registerForm.cleaned_data["center_name"]
             district_name=registerForm.cleaned_data["district_name"]
             key=registerForm.cleaned_data["key"]
             if center_name != "_":
                 center_obj=Center.objects.get(name=center_name)
-                if key==center_obj.centerId.urn[9:]:
-                    user=User.objects.create(email=registerForm.cleaned_data["email"])
-                    user.aadharNumber=registerForm.cleaned_data["aadharNumber"]
-                    user.first_name=registerForm.cleaned_data["first_name"]
-                    user.last_name=registerForm.cleaned_data["last_name"]
-                    user.set_password(registerForm.cleaned_data["password"])
-                    user.is_active = True
-                    AccessControlListCenter.objects.create(
-                        person=user,
-                        center=center_obj
-                    )
-                    user.is_centeradmin=True
-                    user.save()
-                    center_obj.centerId=uuid.uuid4()
-                    center_obj.save()
-                    return redirect('dashboard')
+                key_obj=Keys.objects.filter(person=email,center_name=center_name)
+                if key_obj.exists():
+
+                    if key==key_obj[0].key.urn[9:]:
+                        user=User.objects.create(email=email)
+                        user.aadharNumber=registerForm.cleaned_data["aadharNumber"]
+                        user.first_name=registerForm.cleaned_data["first_name"]
+                        user.last_name=registerForm.cleaned_data["last_name"]
+                        user.set_password(registerForm.cleaned_data["password"])
+                        user.is_active = True
+                        AccessControlListCenter.objects.create(
+                            person=user,
+                            center=center_obj
+                        )
+                        user.is_centeradmin=True
+                        user.save()
+                        # center_obj.centerId=uuid.uuid4()
+                        # center_obj.save()
+                        return redirect('dashboard')
 
             if district_name != "_":
-                print("abcd")
                 district_obj=District.objects.get(name=district_name)
-                print(key)
-                if key==district_obj.districtId.urn[9:]:
-                    print("abcd")
-                    user=User.objects.create(email=registerForm.cleaned_data["email"])
-                    user.aadharNumber=registerForm.cleaned_data["aadharNumber"]
-                    user.first_name=registerForm.cleaned_data["first_name"]
-                    user.last_name=registerForm.cleaned_data["last_name"]
-                    user.set_password(registerForm.cleaned_data["password"])
-                    user.is_active = True
-                    AccessControlListDistrict.objects.create(
-                        person=user,
-                        district=district_obj
-                    )
-                    user.is_centeradmin=True
-                    user.is_districtadmin=True
-                    user.save()
-                    district_obj.districtId=uuid.uuid4()
-                    district_obj.save()
-                    print("SAved")
-                    return redirect('dashboard')
+                key_obj=Keys.objects.filter(person=email,district_name=district_name)
+                if key_obj.exists():
+                    if key==key_obj[0].key.urn[9:]:
+                        user=User.objects.create(email=registerForm.cleaned_data["email"])
+                        user.aadharNumber=registerForm.cleaned_data["aadharNumber"]
+                        user.first_name=registerForm.cleaned_data["first_name"]
+                        user.last_name=registerForm.cleaned_data["last_name"]
+                        user.set_password(registerForm.cleaned_data["password"])
+                        user.is_active = True
+                        AccessControlListDistrict.objects.create(
+                            person=user,
+                            district=district_obj
+                        )
+                        user.is_centeradmin=True
+                        user.is_districtadmin=True
+                        user.save()
+                        # district_obj.districtId=uuid.uuid4()
+                        # district_obj.save()
+                        # str1=str(user.aadharNumber)+" Registered"
+                        # logger.info(str1)   
+                        return redirect('dashboard')
             # user.save()
 
     else:
@@ -205,6 +285,8 @@ def login_gen(request):
 @login_required(login_url="login_gen")
 def dashboard(request):
     user=request.user
+    # str1=str(user.aadharNumber)+" Logged In"
+    # logger.info(str1)   
     # solve login
     # or remove
     center_access=AccessControlListCenter.objects.filter(person=user)
@@ -273,40 +355,44 @@ def dashboard(request):
 def provideaccess(request):
     if request.method == "POST":
         provide_access_form = ProvideAccessForm(request.user,request.POST)
-        print("INside post")
         if provide_access_form.is_valid():
-            print("Inside form")
             # user = registerForm.save(commit=False)
+            email=request.user.email
             center_name=provide_access_form.cleaned_data["center_name"]
             district_name=provide_access_form.cleaned_data["district_name"]
             key=provide_access_form.cleaned_data["key"]
             if center_name != "_":
-                center_obj=Center.objects.get(name=center_name)
-                if key==center_obj.centerId.urn[9:]:      
-                    user=User.objects.get(email=request.user.email)
-                    AccessControlListCenter.objects.create(
-                        person=user,
-                        center=center_obj
-                    )
-                    user.is_centeradmin=True
-                    user.save()
-                    center_obj.centerId=uuid.uuid4()
-                    center_obj.save()
-                    return redirect('dashboard')
+                key_obj=Keys.objects.filter(person=email,center_name=center_name)
+                if key_obj.exists():
+                    center_obj=Center.objects.get(name=center_name)
+                    if key==key_obj[0].key.urn[9:]:      
+                        user=User.objects.get(email=request.user.email)
+                        AccessControlListCenter.objects.create(
+                            person=user,
+                            center=center_obj
+                        )
+                        user.is_centeradmin=True
+                        user.save()
+                        # center_obj.centerId=uuid.uuid4()
+                        # center_obj.save()
+                        return redirect('dashboard')
+                
             if district_name != "_":
-                district_obj=District.objects.get(name=district_name)
-                if key==district_obj.districtId.urn[9:]:
-                    user=User.objects.get(email=request.user.email)
-                    AccessControlListDistrict.objects.create(
-                        person=user,
-                        district=district_obj
-                    )
-                    user.is_centeradmin=True
-                    user.is_districtadmin=True
-                    user.save()
-                    district_obj.districtId=uuid.uuid4()
-                    district_obj.save()
-                    return redirect('dashboard')
+                key_obj=Keys.objects.filter(person=email,district_name=district_name)
+                if key_obj.exists():
+                    district_obj=District.objects.get(name=district_name)
+                    if key==key_obj[0].key.urn[9:]:
+                        user=User.objects.get(email=request.user.email)
+                        AccessControlListDistrict.objects.create(
+                            person=user,
+                            district=district_obj
+                        )
+                        user.is_centeradmin=True
+                        user.is_districtadmin=True
+                        user.save()
+                        # district_obj.districtId=uuid.uuid4()
+                        # district_obj.save()
+                        return redirect('dashboard')
             # user.save()
 
     else:
@@ -389,37 +475,31 @@ def get_ratio_district():
             min_value=district.population
         if(district.population > max_value):
             max_value=district.population
-    print("I am here")
     population_ratio_dict={}
     sum_of_ratio=0
     if(min_value==0):
         min_value=1
 
-    print("I am here")
     for district in district_obj.iterator():
         population_ratio_dict[district.name]=ceil(district.population/min_value)
         sum_of_ratio+=population_ratio_dict[district.name]
-    print("I reached")
-    print(population_ratio_dict)
-    if(sum_of_ratio > count_of_vaccine_in_produced_state):
-        while(sum_of_ratio > count_of_vaccine_in_produced_state):
-            quantity_subtract=count_of_vaccine_in_produced_state-sum_of_ratio
-            sum_of_ratio=0
-            count=0
-            for key in population_ratio_dict:
+    # if(sum_of_ratio > count_of_vaccine_in_produced_state):
+    #     while(sum_of_ratio > count_of_vaccine_in_produced_state):
+    #         quantity_subtract=count_of_vaccine_in_produced_state-sum_of_ratio
+    #         sum_of_ratio=0
+    #         count=0
+    #         for key in population_ratio_dict:
 
-                print(int(population_ratio_dict[key])>0,quantity_subtract<0,quantity_subtract,count<quantity_subtract)
+    #             print(int(population_ratio_dict[key])>0,quantity_subtract<0,quantity_subtract,count<quantity_subtract)
 
-                if(int(population_ratio_dict[key])>0 and count<abs(quantity_subtract)):
-                    population_ratio_dict[key]-=1
-                    count+=1
-                    print(key)
-                    print(population_ratio_dict)
-                sum_of_ratio+=population_ratio_dict[key]
+    #             if(int(population_ratio_dict[key])>0 and count<abs(quantity_subtract)):
+    #                 population_ratio_dict[key]-=1
+    #                 count+=1
+    #                 print(key)
+    #                 print(population_ratio_dict)
+    #             sum_of_ratio+=population_ratio_dict[key]
                 # quantity_subtract=count_of_vaccine_in_produced_state-sum_of_ratio
-    print(sum_of_ratio)
     ratio_multiplication_factor = count_of_vaccine_in_produced_state / sum_of_ratio
-    print("ratio_multiplication_factor : ",ratio_multiplication_factor)
     for district in district_obj:
         ratio_dict[district.name] = floor(ratio_multiplication_factor * population_ratio_dict[district.name])
 
@@ -450,7 +530,6 @@ def send_to_district(request):
                     while count != 0:
                         lots_count = VaccineLot.objects.filter(status = "produced").count()
                         if(lots_count > 0):
-                            print("hii")
                             lot =  VaccineLot.objects.filter(status = "produced")[0]
                             district = District.objects.get(name = district_name)
                             district_vaccine_obj = DistrictVaccineData.objects.create(lot = lot, district=district)
@@ -459,8 +538,9 @@ def send_to_district(request):
                             lot.departureTimestamp = datetime.datetime.now()
                             lot.save()
                             count -= 1
+                            # str1=str(request.user.aadharNumber)+" sent to"
+                            # logger.info(str1)   
                         else:
-                            print("hello")
                             error = "Quantities were assigned upto district: " + district_name 
                             break
         
@@ -475,7 +555,6 @@ def send_to_district(request):
         
         
         quantity_available = VaccineLot.objects.filter(status = "produced").count()
-        print(districts)
         context = {"districts":zip(districts,zip(ratio_list,count_list)),"quantity_available":quantity_available,"error":error, "ratio":ratio}
         return render(request,"admin/send_to_district.html",context)
     return redirect("admin")
@@ -512,39 +591,40 @@ def get_ratio_center(district):
             min_value=center.population
         if(center.population > max_value):
             max_value=center.population
-    print("I am here")
     population_ratio_dict={}
     sum_of_ratio=0
     if(min_value==0):
         min_value=1
 
-    print("I am here")
     for center in center_obj.iterator():
         population_ratio_dict[center.name]=ceil(center.population/min_value)
         sum_of_ratio+=population_ratio_dict[center.name]
-    print("I reached")
-    print(population_ratio_dict)
-    if(sum_of_ratio > count_of_vaccine_atDistrict_state):
-        while(sum_of_ratio > count_of_vaccine_atDistrict_state):
-            quantity_subtract=count_of_vaccine_atDistrict_state-sum_of_ratio
-            sum_of_ratio=0
-            count=0
-            for key in population_ratio_dict:
 
-                print(int(population_ratio_dict[key])>0,quantity_subtract<0,quantity_subtract,count<quantity_subtract)
+    # if(sum_of_ratio > count_of_vaccine_atDistrict_state):
+    #     while(sum_of_ratio > count_of_vaccine_atDistrict_state):
+    #         quantity_subtract=count_of_vaccine_atDistrict_state-sum_of_ratio
+    #         sum_of_ratio=0
+    #         count=0
+    #         for key in population_ratio_dict:
 
-                if(int(population_ratio_dict[key])>0 and count<abs(quantity_subtract)):
-                    population_ratio_dict[key]-=1
-                    count+=1
-                    print(key)
-                    print(population_ratio_dict)
-                sum_of_ratio+=population_ratio_dict[key]
+    #             print(int(population_ratio_dict[key])>0,quantity_subtract<0,quantity_subtract,count<quantity_subtract)
+
+    #             if(int(population_ratio_dict[key])>0 and count<abs(quantity_subtract)):
+    #                 population_ratio_dict[key]-=1
+    #                 count+=1
+    #                 print(key)
+    #                 print(population_ratio_dict)
+    #             sum_of_ratio+=population_ratio_dict[key]
                 # quantity_subtract=count_of_vaccine_atDistrict_state-sum_of_ratio
-    print(sum_of_ratio)
     ratio_multiplication_factor = count_of_vaccine_atDistrict_state / sum_of_ratio
+
+
+    # logger.info(ratio_multiplication_factor)
 
     for center in center_obj:
         ratio_dict[center.name] = floor(ratio_multiplication_factor * population_ratio_dict[center.name])
+        if ratio_dict[center.name] == 0:
+            ratio_dict[center.name] = ceil(ratio_multiplication_factor * population_ratio_dict[center.name])
 
     return ratio_dict
 
@@ -553,7 +633,6 @@ def get_ratio_center(district):
 
 def send_to_center(request,name):
     if verify(request,"district",name):
-        print("send")
         error = ""
         centers = Center.objects.filter(district__name__contains = name)
         if request.method == "POST":
@@ -563,7 +642,6 @@ def send_to_center(request,name):
             error = ""
             count = 0
             for center_name,lot_quantity in center_quantities:
-                print(center_name+" "+str(lot_quantity))
                 if(int(lot_quantity) > 0):
                     count = int(lot_quantity)
                     while count != 0:
@@ -579,7 +657,6 @@ def send_to_center(request,name):
                             center_vaccine_obj.save()
                             count -= 1
                         else:
-                            print("hello")
                             error = "Quantities were assigned upto center: " + center_name 
                             break
 
@@ -677,14 +754,11 @@ def registerForVaccinationDistrictForm(request):
         for center in centers:
             if(center.district.name == district.name):
                 district_centers.append(district.name + "-" +center.name)
-    print(district_centers)
     if request.method == "POST":
         district_center = request.POST["district_center"]
         district_center_name = str(district_center).split("-")
         district_name = district_center_name[0]
         center_name = district_center_name[1]
-        print(district_name)
-        print(center_name)
         return redirect("registerForVaccination",district_name,str(center_name))
     context = {"district_centers":district_centers}
     return render(request,"registerForVaccinationDistrictForm.html",context)
@@ -712,27 +786,19 @@ def registerForVaccination(request,district_name,center_name):
          
     min_date = datetime.date.today()
     min_date = min_date + datetime.timedelta(days=7)
-    print(center_name)
     while(True): 
         if(Receiver.objects.filter(center__name__contains = center_name, appointmentDate = min_date).count() < Center.objects.get(name = center_name).maxCountPerDate):
             break  
         min_date = min_date + datetime.timedelta(days=1)
-    print("hi")
-    print(center_name + "1")
-    print(datetime.date.today())  
-    print(min_date)
-    print("hi2")
     max_date = min_date + datetime.timedelta(days=7)
     blocked_dates = []
     start_date = min_date
     end_date = max_date
     delta = datetime.timedelta(days=1)
-    print("hi3")
     while start_date <= end_date:
         if(Receiver.objects.filter(center__name__contains = center_name, appointmentDate = start_date).count() >= Center.objects.get(name = center_name).maxCountPerDate):
             blocked_dates.append(str(start_date))
         start_date += delta
-    print(blocked_dates)
     context={"district_name":district_name,"center_name":center_name,"min_date_for_registration":str(min_date),"error":error, "max_date_for_registration":str(max_date), 'blocked_dates':blocked_dates}
     return render(request,"registerForVaccination.html",context)
 

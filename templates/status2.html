@@ -19,6 +19,7 @@
             border: 1px solid #fff;
             border-radius: 10px;
             text-align: center;
+            width:fit-content;
     }
             
             
@@ -44,7 +45,7 @@
                           <div class="grid-container grid-container--fill">
                             {% for lot in lots %}
                                     {% if lot.status == 'produced' %}
-                                        <div class="grid-element" name="megaCenter">
+                                        <div class="grid-element"  name="megaCenter">
                                           {{lot.lotId}}
                                         </div>
                                     {% endif %}
